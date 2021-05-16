@@ -1,0 +1,58 @@
+{
+  "html.format.wrapLineLength": 80,
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "html.format.enable": false,
+  "html.format.indentHandlebars": true,
+  "html.format.indentInnerHtml": true,
+  "typescript.format.insertSpaceAfterConstructor": true,
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "solargraph.autoformat": true,
+  "solargraph.formatting": true,
+  "eslint.format.enable": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "css.validate":false,
+  "less.validate":false,
+  "scss.validate":false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
+  },
+  "go.formatTool": "gofmt",
+  "editor.formatOnSave": false,
+  "eslint.packageManager": "yarn",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[graphql]": {
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  },
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+  "json.schemas": [
+  ],
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "workbench.colorTheme": "Tomorrow Night Blue",
+  "editor.fontLigatures": null
+}

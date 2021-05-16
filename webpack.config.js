@@ -2,9 +2,9 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { loader } = require('mini-css-extract-plugin');
+const globule = require("globule");
 
-module.exports = {
+const app = {
   mode: "development",
   devtool: "eval-source-map",
   mode: "development",
@@ -12,7 +12,7 @@ module.exports = {
   output: {
     filename: "./javascripts/main.js",
     path: path.resolve(__dirname, "./dist"),
-    publicPath: '/'
+    publicPath: "/",
   },
   devServer: {
     //ルートディレクトリの指定
@@ -64,26 +64,26 @@ module.exports = {
               importLoaders: 2,
             },
           },
+          // PostCSSのための設定
+          {
+            loader: "postcss-loader",
+            options: {
+              // PostCSS側でもソースマップを有効にする
+              // sourceMap: true,
+              postcssOptions: {
+                plugins: [
+                  // Autoprefixerを有効化
+                  // ベンダープレフィックスを自動付与する
+                  ["autoprefixer", { grid: true }],
+                ],
+              },
+            },
+          },
           {
             loader: "sass-loader",
           },
         ],
       },
-      // // PostCSSのための設定
-      // {
-      //   loader: "postcss-loader",
-      //   options: {
-      //     // PostCSS側でもソースマップを有効にする
-      //     // sourceMap: true,
-      //     postcssOptions: {
-      //       plugins: [
-      //         // Autoprefixerを有効化
-      //         // ベンダープレフィックスを自動付与する
-      //         ["autoprefixer", { grid: true }],
-      //       ],
-      //     },
-      //   },
-      // },
       {
         test: /\.(jpeg|png|jpg)/,
         type: "asset/resource",
@@ -122,10 +122,29 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "./stylesheets/main.css",
     }),
-    new HtmlWebpackPlugin({
-      template: "./src/templates/index.pug",
-      filename: "index.html",
-    }),
+    // new HtmlWebpackPlugin({
+    //   template: "./src/templates/index.pug",
+    //   filename: "index.html",
+    // }),
+
     new CleanWebpackPlugin(),
   ],
 };
+
+const templates = globule.find("./src/templates/**/*.pug", {
+  ignore: ["./src/templates/**/_*.pug"],
+});
+
+templates.forEach((template) => {
+  const fileName = template
+    .replace("./src/templates/", "")
+    .replace(".pug", ".html");
+  app.plugins.push(
+    new HtmlWebpackPlugin({
+      filename: `${fileName}`,
+      template: template,
+    })
+  );
+});
+
+module.exports = app;
