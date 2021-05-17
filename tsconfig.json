@@ -9,6 +9,9 @@
     "module": "es6",
     "target": "es5",
     "jsx": "react",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    // cf. https://github.com/DefinitelyTyped/DefinitelyTyped/issues/33311
+     // cf. https://stackoverflow.com/a/55540896
+     "skipLibCheck": true,
   },
 }
