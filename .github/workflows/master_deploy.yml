@@ -53,4 +53,22 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+      - name: Slack Notification Success
+        if: success()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_TITLE: Status
+          SLACK_MESSAGE: DEPLOY SUCCESS
+          SLACK_COLOR: Status
+          SLACK_USERNAME: Github Action Notifier
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Slack Notification - Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_TITLE: Status
+          SLACK_MESSAGE: DEPLOY FAILURE
+          SLACK_COLOR: danger
+          SLACK_USERNAME: Github Action Notifier
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
