@@ -1,8 +1,12 @@
-import React from 'react'
-import ReactDom from 'react-dom'
+import React from 'react';
+import ReactDom from 'react-dom';
+import { GlobalStyle } from './GlobalStyle';
+import { App } from './App';
 
-const App = () => {
-  return <h1>Hello React</h1>
-}
-
-ReactDom.render(<App />, document.getElementById('root'))
+ReactDom.render(
+  <>
+    <GlobalStyle />
+    <App />
+  </>,
+  document.getElementById('root'),
+);
