@@ -2,6 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const StylelintPlugin = require('stylelint-webpack-plugin');
 const globule = require("globule");
 
 const app = {
@@ -118,11 +119,14 @@ const app = {
     ],
   },
   resolve: {
-    extensions: ['.tsx','ts','jsx','.js'],
+    extensions: ['.tsx', 'ts', 'jsx', '.js'],
   },
   plugins: [
     new MiniCssExtractPlugin({
       filename: './stylesheets/main.css',
+    }),
+    new StylelintPlugin({
+      configFile: '.stylelintrc.yml',
     }),
     // new HtmlWebpackPlugin({
     //   template: "./src/templates/index.pug",
