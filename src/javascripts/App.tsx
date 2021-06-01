@@ -34,12 +34,16 @@ export function App() {
         }),
       );
 
-      const unorderedCards = await api('GET /v1/cards', null);
+      const [unorderedCards, cardsOrder] = await Promise.all([
+        api('GET /v1/cards', null),
+        api('GET /v1/cardsOrder', null),
+      ]);
 
       setData(
         produce((draft: State) => {
-          draft.columns?.forEach(columns => {
-            columns.cards = unorderedCards;
+          draft.cardsOrder = cardsOrder;
+          draft.columns?.forEach(column => {
+            column.cards = sortBy(unorderedCards, cardsOrder, column.id);
           });
         }),
       );

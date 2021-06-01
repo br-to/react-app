@@ -59,7 +59,7 @@ jobs:
         env:
           SLACK_TITLE: Status
           SLACK_MESSAGE: DEPLOY SUCCESS
-          SLACK_COLOR: Warning
+          SLACK_COLOR: good
           SLACK_USERNAME: Github Action Notifier
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       - name: Slack Notification - Failure
