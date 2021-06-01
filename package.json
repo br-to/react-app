@@ -8,11 +8,12 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "node scripts/server.js",
+    "start": "yarn && node scripts/server.js",
     "start-api": "json-server --watch ./api/db.json --middlewares ./api/middlewares",
     "build:dev": "webpack --mode development",
     "build": "webpack --mode production",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\""
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
@@ -23,11 +24,17 @@
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
     "@types/styled-components": "^5.1.9",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
     "autoprefixer": "9.8.6",
     "babel-loader": "^8.2.2",
     "browser-sync": "^2.26.14",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "css-loader": "^5.2.4",
+    "eslint": "^7.27.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "globule": "^1.3.2",
     "html-loader": "^2.1.2",
     "html-webpack-plugin": "^5.3.1",

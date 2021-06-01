@@ -24,6 +24,11 @@ const app = {
   module: {
     rules: [
       {
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader',
+      },
+      {
         test: /\.(ts|tsx)/,
         exclude: /node_modules/,
         use: [
