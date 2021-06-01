@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node scripts/server.js",
+    "start-api": "json-server --watch ./api/db.json --middlewares ./api/middlewares",
     "build:dev": "webpack --mode development",
     "build": "webpack --mode production",
     "tsc": "tsc"
@@ -32,6 +33,7 @@
     "html-webpack-plugin": "^5.3.1",
     "image-webpack-loader": "^7.0.1",
     "immer": "^9.0.2",
+    "json-server": "^0.16.3",
     "mini-css-extract-plugin": "^1.6.0",
     "node-sass": "^6.0.0",
     "postcss-loader": "^5.3.0",
