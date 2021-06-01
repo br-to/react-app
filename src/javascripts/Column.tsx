@@ -12,16 +12,24 @@ export function Column({
   onCardDragStart,
   onCardDrop,
   onCardDeleteClick,
+  text,
+  onTextChange,
+  onTextConfirm,
+  onTextCancel,
 }: {
   title?: string;
   filterValue?: string;
-  cards: {
+  cards?: {
     id: string;
     text?: string;
   }[];
   onCardDragStart?(id: string): void;
   onCardDrop?(entered: string | null): void;
   onCardDeleteClick?(id: string): void;
+  text?: string;
+  onTextChange?(value: string): void;
+  onTextConfirm?(): void;
+  onTextCancel?(): void;
 }) {
   // rawFilterValueの前後の空白を取り除く
   const filterValue = rawFilterValue?.trim();
@@ -29,22 +37,30 @@ export function Column({
   const keywords = filterValue?.toLowerCase().split(/\s+/g) ?? [];
 
   console.log(`key ${keywords}`);
-  const cards = rawCards.filter(({ text }) =>
+  const cards = rawCards?.filter(({ text }) =>
     keywords?.every(word => text?.toLowerCase().includes(word)),
   );
 
   // 各column内のcardの個数
-  const totalCount = rawCards.length;
+  const totalCount = rawCards?.length;
 
   // inputForm入力あるたびにonChangeに入れたsetTextを呼ぶ
   // textはColumnコンポーネントのstate
-  const [text, setText] = useState('');
+  // const [text, setText] = useState('');
   // inputMode InputForm の表示・非表示を制御しています。
   const [inputMode, setInputMode] = useState(false);
   // 現在の値から次の値を算出する関数を渡す
   const toggleInput = () => setInputMode((value: boolean) => !value);
-  const confirmInput = () => setText('');
-  const cancelInput = () => setInputMode(false);
+  // const confirmInput = () => setText('');
+  // const cancelInput = () => setInputMode(false);
+
+  const confirmInput = () => {
+    onTextConfirm?.();
+  };
+  const cancelInput = () => {
+    setInputMode(false);
+    onTextCancel?.();
+  };
 
   const [draggingCardID, setDraggingCardID] =
     useState<string | undefined>(undefined);
@@ -56,7 +72,7 @@ export function Column({
   return (
     <Container>
       <Header>
-        <CountBadge>{totalCount}</CountBadge>
+        {totalCount >= 0 && <CountBadge>{totalCount}</CountBadge>}
         <ColumnName>{title}</ColumnName>
 
         <AddButton onClick={toggleInput} />
@@ -65,41 +81,48 @@ export function Column({
       {inputMode && (
         <InputForm
           value={text}
-          onChange={setText}
+          onChange={onTextChange}
           onConfirm={confirmInput}
           onCancel={cancelInput}
         />
       )}
 
-      {filterValue && <ResultCount>{cards.length} results</ResultCount>}
+      {!cards ? (
+        <Loading />
+      ) : (
+        <>
+          {filterValue && <ResultCount>{cards.length} results</ResultCount>}
 
-      <VerticalScroll>
-        {cards.map(({ id, text }, i) => (
-          <Card.DropArea
-            key={id}
-            disabled={
-              draggingCardID !== undefined &&
-              (id === draggingCardID || cards[i - 1]?.id === draggingCardID)
-            }
-            onDrop={() => onCardDrop?.(id)}
-          >
-            <Card
-              text={text}
-              onDragStart={() => handleCardDragStart(id)}
-              onDragEnd={() => setDraggingCardID(undefined)}
-              onDeleteClick={() => onCardDeleteClick?.(id)}
+          <VerticalScroll>
+            {cards.map(({ id, text }, i) => (
+              <Card.DropArea
+                key={id}
+                disabled={
+                  draggingCardID !== undefined &&
+                  (id === draggingCardID || cards[i - 1]?.id === draggingCardID)
+                }
+                onDrop={() => onCardDrop?.(id)}
+              >
+                <Card
+                  text={text}
+                  onDragStart={() => handleCardDragStart(id)}
+                  onDragEnd={() => setDraggingCardID(undefined)}
+                  onDeleteClick={() => onCardDeleteClick?.(id)}
+                />
+              </Card.DropArea>
+            ))}
+
+            <Card.DropArea
+              style={{ height: '100%' }}
+              disabled={
+                draggingCardID !== undefined &&
+                cards[cards.length - 1]?.id === draggingCardID
+              }
+              onDrop={() => onCardDrop?.(null)}
             />
-          </Card.DropArea>
-        ))}
-        <Card.DropArea
-          style={{ height: '100%' }}
-          disabled={
-            draggingCardID !== undefined &&
-            cards[cards.length - 1]?.id === draggingCardID
-          }
-          onDrop={() => onCardDrop?.(null)}
-        />
-      </VerticalScroll>
+          </VerticalScroll>
+        </>
+      )}
     </Container>
   );
 }
@@ -156,6 +179,13 @@ const AddButton = styled.button.attrs({
 // InputFormのstyleを変えるために_InputFormで呼び出している
 const InputForm = styled(_InputForm)`
   padding: 8px;
+`;
+
+const Loading = styled.div.attrs({
+  children: 'Loading...',
+})`
+  padding: 8px;
+  font-size: 14px;
 `;
 
 const ResultCount = styled.div`
