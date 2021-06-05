@@ -2,7 +2,6 @@ import { Reducer } from 'redux';
 import produce from 'immer';
 import { sortBy, reorderPatch } from './util';
 import { CardID, ColumnID } from './api';
-import { findDOMNode } from 'react-dom';
 
 export type State = {
   filterValue: string;
@@ -17,6 +16,7 @@ export type State = {
   }[];
   cardsOrder: Record<string, CardID | ColumnID | null>;
   deletingCardID?: CardID;
+  draggingCardID?: CardID;
 };
 
 const initialState: State = {
@@ -62,6 +62,18 @@ export type Action =
     }
   | {
       type: 'Dialog.ConfirmDelete';
+    }
+  | {
+      type: 'Card.StartDragging';
+      payload: {
+        cardID: CardID;
+      };
+    }
+  | {
+      type: 'Card.Drop';
+      payload: {
+        toID: CardID | ColumnID;
+      };
     };
 
 export const reducer: Reducer<State, Action> = produce(
@@ -123,6 +135,36 @@ export const reducer: Reducer<State, Action> = produce(
       }
       case 'Dialog.CancelDelete': {
         draft.deletingCardID = undefined;
+        return;
+      }
+      case 'Card.StartDragging': {
+        const { cardID } = action.payload;
+        draft.draggingCardID = cardID;
+        return;
+      }
+      case 'Card.Drop': {
+        const formID = draft.draggingCardID;
+        if (!formID) return;
+
+        draft.draggingCardID = undefined;
+
+        const { toID } = action.payload;
+        if (formID === toID) return;
+
+        // const patch = reorderPatch(draft.cardsOrder, fromID, toID) に続く行で cardsOrder を更新しています。
+        const patch = reorderPatch(draft.cardsOrder, formID, toID);
+        draft.cardsOrder = {
+          ...draft.cardsOrder,
+          ...patch,
+        };
+
+        // const unorderedCards = draft.columns?.flatMap(c => c.cards ?? []) ?? [] で未ソートの card 一覧を取得しています。
+        const unorderedCards = draft.columns?.flatMap(c => c.cards ?? []) ?? [];
+
+        // column.cards = sortBy(unorderedCards, draft.cardsOrder, column.id) にて column ごとに card を順序どおり並べつつ、適切な column に割り当てています。
+        draft.columns?.forEach(column => {
+          column.cards = sortBy(unorderedCards, draft.cardsOrder, column.id);
+        });
         return;
       }
       default: {
