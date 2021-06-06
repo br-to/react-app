@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 // import produce from 'immer';
 import { randomID, reorderPatch } from './util';
-import { api, CardID, ColumnID } from './api';
+import { api } from './api';
 import { State as RootState, Action } from './reducer';
 import { Header as _Header } from './Header';
 import { Column } from './Column';

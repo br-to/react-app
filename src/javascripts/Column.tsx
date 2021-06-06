@@ -11,9 +11,6 @@ export function Column({
   id: columnID,
   title,
   cards: rawCards,
-  text,
-  onTextChange,
-  onTextConfirm,
   onTextCancel,
 }: {
   id: ColumnID;
@@ -22,9 +19,6 @@ export function Column({
     id: CardID;
     text?: string;
   }[];
-  text?: string;
-  onTextChange?(value: string): void;
-  onTextConfirm?(): void;
   onTextCancel?(): void;
 }) {
   // rawFilterValueの前後の空白を取り除く
@@ -49,9 +43,6 @@ export function Column({
   // const confirmInput = () => setText('');
   // const cancelInput = () => setInputMode(false);
 
-  const confirmInput = () => {
-    onTextConfirm?.();
-  };
   const cancelInput = () => {
     setInputMode(false);
     onTextCancel?.();
@@ -74,14 +65,7 @@ export function Column({
         <AddButton onClick={toggleInput} />
       </Header>
 
-      {inputMode && (
-        <InputForm
-          value={text}
-          onChange={onTextChange}
-          onConfirm={confirmInput}
-          onCancel={cancelInput}
-        />
-      )}
+      {inputMode && <InputForm columnID={columnID} onCancel={cancelInput} />}
 
       {!cards ? (
         <Loading />
