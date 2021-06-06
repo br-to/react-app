@@ -58,6 +58,9 @@ export type Action =
       };
     }
   | {
+      type: 'Card.EndDragging';
+    }
+  | {
       type: 'Dialog.CancelDelete';
     }
   | {
@@ -211,6 +214,10 @@ export const reducer: Reducer<State, Action> = produce(
           ...draft.cardsOrder,
           ...patch,
         };
+        return;
+      }
+      case 'Card.EndDragging': {
+        draft.draggingCardID = undefined;
         return;
       }
       default: {
