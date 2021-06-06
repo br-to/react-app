@@ -1,27 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import produce from 'immer';
-import { randomID, sortBy, reorderPatch } from './util';
+// import produce from 'immer';
+import { randomID, reorderPatch } from './util';
 import { api, CardID, ColumnID } from './api';
 import { State as RootState, Action } from './reducer';
 import { Header as _Header } from './Header';
 import { Column } from './Column';
 import { DeleteDialog } from './DeleteDialog';
 import { Overlay as _Overlay } from './Overlay';
-
-type State = {
-  columns?: {
-    id: ColumnID;
-    title?: string;
-    text?: string;
-    cards?: {
-      id: CardID;
-      text?: string;
-    }[];
-  }[];
-  cardsOrder: Record<string, CardID | ColumnID | null>;
-};
 
 export function App() {
   // const [filterValue, setFilterValue] = useState('');
@@ -40,7 +27,7 @@ export function App() {
   // });
   const columns = useSelector(state => state.columns);
   const cardsOrder = useSelector(state => state.cardsOrder);
-  const setData = fn => fn({ cardsOrder: {} });
+  // const setData = fn => fn({ cardsOrder: {} });
 
   const cardIsBeingDeleted = useSelector(state =>
     Boolean(state.deletingCardID),
@@ -83,14 +70,13 @@ export function App() {
   }, [dispatch]);
 
   const setText = (columnID: ColumnID, value: string) => {
-    setData(
-      produce((draft: State) => {
-        const column = draft.columns?.find(c => c.id === columnID);
-        if (!column) return;
-
-        column.text = value;
-      }),
-    );
+    dispatch({
+      type: 'InputForm.SetText',
+      payload: {
+        columnID,
+        value,
+      },
+    });
   };
 
   const addCard = (columnID: ColumnID) => {
@@ -102,24 +88,14 @@ export function App() {
 
     const patch = reorderPatch(cardsOrder, cardID, cardsOrder[columnID]);
 
-    setData(
-      produce((draft: State) => {
-        const column = draft.columns?.find(c => c.id === columnID);
-        if (!column) return;
-        if (!column?.cards) return;
+    dispatch({
+      type: 'InputForm.ConfirmInput',
+      payload: {
+        columnID,
+        cardID,
+      },
+    });
 
-        column.cards.unshift({
-          id: cardID,
-          text: column.text,
-        });
-        column.text = '';
-
-        draft.cardsOrder = {
-          ...draft.cardsOrder,
-          ...patch,
-        };
-      }),
-    );
     api('POST /v1/cards', {
       id: cardID,
       text,
