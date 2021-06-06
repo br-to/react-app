@@ -23,18 +23,6 @@
       "text": "布団から出る\n(:3っ)っ -=三[＿＿]"
     },
     {
-      "id": "TsXP5w9qLeM-",
-      "text": "顔を洗う👐"
-    },
-    {
-      "id": "3NRSLMq49xvT",
-      "text": "朝食をとる🍞"
-    },
-    {
-      "id": "ulnuLLt5TN93",
-      "text": "SNSをチェックする🐦"
-    },
-    {
       "id": "-wkumDeruhSx",
       "text": "布団に入る\n(:3[___]"
     },
@@ -47,25 +35,37 @@
       "text": "小腹ですよ"
     },
     {
-      "id": "lDcMhYmdFLLL",
-      "text": "ssss"
-    },
-    {
       "id": "ggi6Fj5SXEmI",
       "text": "kobarakun"
+    },
+    {
+      "id": "Veql4ca7OSCc",
+      "text": "koabaradesu!"
+    },
+    {
+      "id": "O64mdndqNT5Y",
+      "text": "koaba"
+    },
+    {
+      "id": "WhyiDduIJF6R",
+      "text": "qqqq"
+    },
+    {
+      "id": "tiKgwcJeLeab",
+      "text": "kobaraqqq"
     }
   ],
   "cardsOrder": {
-    "cXrtw5n8-FsB": "ulnuLLt5TN93",
+    "cXrtw5n8-FsB": "tiKgwcJeLeab",
     "w7DTqK1QQKTI": "ggi6Fj5SXEmI",
-    "bfrqTfEydU38": "lDcMhYmdFLLL",
+    "bfrqTfEydU38": "WhyiDduIJF6R",
     "dfwMbxZS0EmM": "7lR4Vd3EYixP",
     "7lR4Vd3EYixP": "dfwMbxZS0EmM",
-    "TsXP5w9qLeM-": "w7DTqK1QQKTI",
-    "3NRSLMq49xvT": "-wkumDeruhSx",
-    "ulnuLLt5TN93": "3NRSLMq49xvT",
-    "-wkumDeruhSx": "cXrtw5n8-FsB",
-    "lDcMhYmdFLLL": "bfrqTfEydU38",
-    "ggi6Fj5SXEmI": "TsXP5w9qLeM-"
+    "-wkumDeruhSx": "w7DTqK1QQKTI",
+    "ggi6Fj5SXEmI": "-wkumDeruhSx",
+    "Veql4ca7OSCc": "ulnuLLt5TN93",
+    "O64mdndqNT5Y": "Veql4ca7OSCc",
+    "WhyiDduIJF6R": "bfrqTfEydU38",
+    "tiKgwcJeLeab": "O64mdndqNT5Y"
   }
 }

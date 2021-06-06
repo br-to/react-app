@@ -12,6 +12,8 @@
     "start-api": "json-server --watch ./api/db.json --middlewares ./api/middlewares",
     "build:dev": "webpack --mode development",
     "build": "webpack --mode production",
+    "pretest": "tsc --project ./test/tsconfig.json --outDir ./test/dist",
+    "test": "node ./test/dist/test",
     "tsc": "tsc",
     "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\""
   },
@@ -29,6 +31,7 @@
     "@typescript-eslint/parser": "^4.26.0",
     "autoprefixer": "9.8.6",
     "babel-loader": "^8.2.2",
+    "baretest": "^2.0.0",
     "browser-sync": "^2.26.14",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "css-loader": "^5.2.4",

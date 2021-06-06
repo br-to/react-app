@@ -1,20 +1,94 @@
 import { Reducer } from 'redux';
 import produce from 'immer';
+import { sortBy, reorderPatch } from './util';
+import { CardID, ColumnID } from './api';
 
 export type State = {
   filterValue: string;
+  columns?: {
+    id: ColumnID;
+    title: string;
+    text?: string;
+    cards?: {
+      id: CardID;
+      text?: string;
+    }[];
+  }[];
+  cardsOrder: Record<string, CardID | ColumnID | null>;
+  deletingCardID?: CardID;
+  draggingCardID?: CardID;
 };
 
 const initialState: State = {
   filterValue: '',
+  cardsOrder: {},
 };
 
-export type Action = {
-  type: 'Filter.SetFilter';
-  payload: {
-    value: string;
-  };
-};
+export type Action =
+  | {
+      type: 'Filter.SetFilter';
+      payload: {
+        value: string;
+      };
+    }
+  | {
+      type: 'App.SetColumns';
+      payload: {
+        columns: {
+          id: ColumnID;
+          title?: string;
+          text?: string;
+        }[];
+      };
+    }
+  | {
+      type: 'App.SetCards';
+      payload: {
+        cards: {
+          id: CardID;
+          text?: string;
+        }[];
+        cardsOrder: Record<string, CardID | ColumnID | null>;
+      };
+    }
+  | {
+      type: 'Card.SetDeletingCard';
+      payload: {
+        cardID: CardID;
+      };
+    }
+  | {
+      type: 'Dialog.CancelDelete';
+    }
+  | {
+      type: 'Dialog.ConfirmDelete';
+    }
+  | {
+      type: 'Card.StartDragging';
+      payload: {
+        cardID: CardID;
+      };
+    }
+  | {
+      type: 'Card.Drop';
+      payload: {
+        toID: CardID | ColumnID;
+      };
+    }
+  | {
+      type: 'InputForm.SetText';
+      payload: {
+        columnID: ColumnID;
+        value: string;
+      };
+    }
+  | {
+      type: 'InputForm.ConfirmInput';
+      payload: {
+        columnID: ColumnID;
+        cardID: CardID;
+      };
+    };
 
 export const reducer: Reducer<State, Action> = produce(
   (draft: State, action: Action) => {
@@ -24,6 +98,123 @@ export const reducer: Reducer<State, Action> = produce(
 
         draft.filterValue = value;
         return;
+      }
+      case 'App.SetColumns': {
+        const { columns } = action.payload;
+
+        draft.columns = columns;
+        return;
+      }
+      case 'App.SetCards': {
+        const { cards: unorderedCards, cardsOrder } = action.payload;
+
+        draft.cardsOrder = cardsOrder;
+        draft.columns?.forEach(column => {
+          column.cards = sortBy(unorderedCards, cardsOrder, column.id);
+        });
+        return;
+      }
+      case 'Card.SetDeletingCard': {
+        const { cardID } = action.payload;
+
+        draft.deletingCardID = cardID;
+        return;
+      }
+
+      case 'Dialog.ConfirmDelete': {
+        //const cardID = draft.deletingCardID:
+        //削除対象の card の ID は state に持たせているので、action.payload がなくても値が取得できます。
+        const cardID = draft.deletingCardID;
+        if (!cardID) return;
+
+        draft.deletingCardID = undefined;
+
+        //const column = draft.columns?.find(col =>: 削除対象の card を含む column を見つけています。
+        const column = draft.columns?.find(col =>
+          col.cards?.some(c => c.id === cardID),
+        );
+        if (!column?.cards) return;
+
+        // column.cards = column.cards.filter(c => c.id !== cardID):
+        //削除対象の card を含まない card 配列を作って column.cards に代入しています。つまり、card 配列から card を削除しています。
+        column.cards = column.cards.filter(c => c.id !== cardID);
+
+        // const patch = reorderPatch(draft.cardsOrder, cardID): reorderPatch 関数を使って cardsOrder の整合性も保っています。
+        const patch = reorderPatch(draft.cardsOrder, cardID);
+        draft.cardsOrder = {
+          ...draft.cardsOrder,
+          ...patch,
+        };
+        return;
+      }
+      case 'Dialog.CancelDelete': {
+        draft.deletingCardID = undefined;
+        return;
+      }
+      case 'Card.StartDragging': {
+        const { cardID } = action.payload;
+        draft.draggingCardID = cardID;
+        return;
+      }
+      case 'Card.Drop': {
+        const formID = draft.draggingCardID;
+        if (!formID) return;
+
+        draft.draggingCardID = undefined;
+
+        const { toID } = action.payload;
+        if (formID === toID) return;
+
+        // const patch = reorderPatch(draft.cardsOrder, fromID, toID) に続く行で cardsOrder を更新しています。
+        const patch = reorderPatch(draft.cardsOrder, formID, toID);
+        draft.cardsOrder = {
+          ...draft.cardsOrder,
+          ...patch,
+        };
+
+        // const unorderedCards = draft.columns?.flatMap(c => c.cards ?? []) ?? [] で未ソートの card 一覧を取得しています。
+        const unorderedCards = draft.columns?.flatMap(c => c.cards ?? []) ?? [];
+
+        // column.cards = sortBy(unorderedCards, draft.cardsOrder, column.id) にて column ごとに card を順序どおり並べつつ、適切な column に割り当てています。
+        draft.columns?.forEach(column => {
+          column.cards = sortBy(unorderedCards, draft.cardsOrder, column.id);
+        });
+        return;
+      }
+      case 'InputForm.SetText': {
+        const { columnID, value } = action.payload;
+
+        const column = draft.columns?.find(c => c.id === columnID);
+        if (!column) return;
+
+        column.text = value;
+        return;
+      }
+      case 'InputForm.ConfirmInput': {
+        const { columnID, cardID } = action.payload;
+
+        const column = draft.columns?.find(c => c.id === columnID);
+        if (!column?.cards) return;
+
+        column.cards.unshift({
+          id: cardID,
+          text: column.text,
+        });
+        column.text = '';
+
+        const patch = reorderPatch(
+          draft.cardsOrder,
+          cardID,
+          draft.cardsOrder[columnID],
+        );
+        draft.cardsOrder = {
+          ...draft.cardsOrder,
+          ...patch,
+        };
+        return;
+      }
+      default: {
+        const _: never = action;
       }
     }
   },
