@@ -7,7 +7,7 @@ export type State = {
   filterValue: string;
   columns?: {
     id: ColumnID;
-    title: string;
+    title?: string;
     text?: string;
     cards?: {
       id: CardID;

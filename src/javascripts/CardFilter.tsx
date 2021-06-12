@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import * as color from './color';
 import { SearchIcon as _SearchIcon } from './icon';
+import { State as RootState } from './reducer';
 
 export function CardFilter() {
   const dispatch = useDispatch();
-  const value = useSelector(state => state.filterValue);
+  const value = useSelector((state: RootState) => state.filterValue);
   const onChange = (value: string) =>
     dispatch({
       type: 'Filter.SetFilter',

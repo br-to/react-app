@@ -5,16 +5,17 @@ import { reorderPatch } from './util';
 import { api, ColumnID, CardID } from './api';
 import * as color from './color';
 import { CheckIcon as _CheckIcon, TrashIcon } from './icon';
+import { State as RootState } from './reducer';
 
 Card.DropArea = DropArea;
 
 export function Card({ id }: { id: CardID }) {
   // const [drag, setDrag] = useState(false);
   const dispatch = useDispatch();
-  const card = useSelector(state =>
+  const card = useSelector((state: RootState) =>
     state.columns?.flatMap(c => c.cards ?? []).find(c => c.id === id),
   );
-  const drag = useSelector(state => state.draggingCardID === id);
+  const drag = useSelector((state: RootState) => state.draggingCardID === id);
 
   const onDeleteClick = () =>
     dispatch({
@@ -128,8 +129,10 @@ function DropArea({
   style?: React.CSSProperties;
 }) {
   const dispatch = useDispatch();
-  const draggingCardID = useSelector(state => state.draggingCardID);
-  const cardsOrder = useSelector(state => state.cardsOrder);
+  const draggingCardID = useSelector(
+    (state: RootState) => state.draggingCardID,
+  );
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
   const [isTarget, setIsTarget] = useState(false);
   const visible = !disabled && isTarget;
 

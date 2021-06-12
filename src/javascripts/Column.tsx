@@ -5,56 +5,46 @@ import * as color from './color';
 import { Card } from './Card';
 import { PlusIcon } from './icon';
 import { InputForm as _InputForm } from './InputForm';
-import { CardID, ColumnID } from './api';
+import { ColumnID } from './api';
 import { State as RootState } from './reducer';
 
-export function Column({
-  id: columnID,
-  title,
-  cards: rawCards,
-  onTextCancel,
-}: {
-  id: ColumnID;
-  title?: string;
-  cards?: {
-    id: CardID;
-    text?: string;
-  }[];
-  onTextCancel?(): void;
-}) {
-  // rawFilterValueの前後の空白を取り除く
-  // const filterValue = rawFilterValue?.trim();
-  const filterValue = useSelector((state: RootState) =>
-    state.filterValue.trim(),
-  );
-  // 検索結果空白排除
-  // const keywords = filterValue?.toLowerCase().split(/\s+/g) ?? [];
-  const keywords = filterValue.toLowerCase().split(/\s+/g) ?? [];
-
-  const cards = rawCards?.filter(({ text }) =>
-    keywords?.every(word => text?.toLowerCase().includes(word)),
-  );
-
-  // 各column内のcardの個数
-  const totalCount = rawCards?.length;
-
+export function Column({ id: columnID }: { id: ColumnID }) {
   // inputForm入力あるたびにonChangeに入れたsetTextを呼ぶ
   // textはColumnコンポーネントのstate
   // const [text, setText] = useState('');
   // inputMode InputForm の表示・非表示を制御しています。
+  const { column, cards, filtered, totalCount } = useSelector(
+    (state: RootState) => {
+      const filterValue = state.filterValue.trim();
+      const filtered = Boolean(filterValue);
+      const keywords = filterValue.toLowerCase().split(/\s+/g);
+
+      const column = state.columns?.find(c => c.id === columnID);
+      const cards = column?.cards?.filter(({ text }) =>
+        keywords.every(w => text?.toLowerCase().includes(w)),
+      );
+      const totalCount = column?.cards?.length ?? -1;
+
+      return { column, cards, filtered, totalCount };
+    },
+  );
+  const draggingCardID = useSelector(
+    (state: RootState) => state.draggingCardID,
+  );
   const [inputMode, setInputMode] = useState(false);
   // 現在の値から次の値を算出する関数を渡す
   const toggleInput = () => setInputMode((value: boolean) => !value);
+  const cancelInput = () => setInputMode(false);
   // const confirmInput = () => setText('');
   // const cancelInput = () => setInputMode(false);
+  if (!column) {
+    return null;
+  }
 
+  const { title } = column;
   // const confirmInput = () => {
   //   onTextConfirm?.();
   // };
-  const cancelInput = () => {
-    setInputMode(false);
-    onTextCancel?.();
-  };
 
   // const [draggingCardID, setDraggingCardID] =
   //   useState<CardID | undefined>(undefined);
@@ -63,10 +53,6 @@ export function Column({
   //   setDraggingCardID(id);
   //   onCardDragStart?.(id);
   // };
-
-  const draggingCardID = useSelector(
-    (state: RootState) => state.draggingCardID,
-  );
   return (
     <Container>
       <Header>
@@ -82,7 +68,7 @@ export function Column({
         <Loading />
       ) : (
         <>
-          {filterValue && <ResultCount>{cards.length} results</ResultCount>}
+          {filtered && <ResultCount>{cards.length} results</ResultCount>}
 
           <VerticalScroll>
             {cards.map(({ id }, i) => (

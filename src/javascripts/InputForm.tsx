@@ -5,6 +5,7 @@ import { randomID, reorderPatch } from './util';
 import { api, CardID, ColumnID } from './api';
 import * as color from './color';
 import { Button, ConfirmButton } from './Button';
+import { State as RootState } from './reducer';
 
 // value: 表示する値
 // onChange, onConfirm, onCancel イベントを受け取るハンドラー関数
@@ -19,9 +20,9 @@ export function InputForm({
 }) {
   const dispatch = useDispatch();
   const value = useSelector(
-    state => state.columns?.find(c => c.id === columnID)?.text,
+    (state: RootState) => state.columns?.find(c => c.id === columnID)?.text,
   );
-  const cardsOrder = useSelector(state => state.cardsOrder);
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
 
   const onChange = (value: string) =>
     dispatch({
