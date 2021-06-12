@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import * as color from './color';
 import { Card } from './Card';
 import { PlusIcon } from './icon';
@@ -8,7 +9,6 @@ import { CardID } from './api';
 
 export function Column({
   title,
-  filterValue: rawFilterValue,
   cards: rawCards,
   onCardDragStart,
   onCardDrop,
@@ -19,7 +19,6 @@ export function Column({
   onTextCancel,
 }: {
   title?: string;
-  filterValue?: string;
   cards?: {
     id: CardID;
     text?: string;
@@ -33,11 +32,12 @@ export function Column({
   onTextCancel?(): void;
 }) {
   // rawFilterValueの前後の空白を取り除く
-  const filterValue = rawFilterValue?.trim();
+  // const filterValue = rawFilterValue?.trim();
+  const filterValue = useSelector(state => state.filterValue.trim());
   // 検索結果空白排除
-  const keywords = filterValue?.toLowerCase().split(/\s+/g) ?? [];
+  // const keywords = filterValue?.toLowerCase().split(/\s+/g) ?? [];
+  const keywords = filterValue.toLowerCase().split(/\s+/g) ?? [];
 
-  console.log(`key ${keywords}`);
   const cards = rawCards?.filter(({ text }) =>
     keywords?.every(word => text?.toLowerCase().includes(word)),
   );
