@@ -5,7 +5,6 @@ import { reorderPatch } from './util';
 import { api, ColumnID, CardID } from './api';
 import * as color from './color';
 import { CheckIcon as _CheckIcon, TrashIcon } from './icon';
-import { reorderPatch } from './util';
 
 Card.DropArea = DropArea;
 

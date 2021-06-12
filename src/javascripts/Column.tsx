@@ -6,15 +6,12 @@ import { Card } from './Card';
 import { PlusIcon } from './icon';
 import { InputForm as _InputForm } from './InputForm';
 import { CardID, ColumnID } from './api';
+import { State as RootState } from './reducer';
 
 export function Column({
   id: columnID,
   title,
   cards: rawCards,
-  onCardDrop,
-  text,
-  onTextChange,
-  onTextConfirm,
   onTextCancel,
 }: {
   id: ColumnID;
@@ -23,14 +20,13 @@ export function Column({
     id: CardID;
     text?: string;
   }[];
-  text?: string;
-  onTextChange?(value: string): void;
-  onTextConfirm?(): void;
   onTextCancel?(): void;
 }) {
   // rawFilterValueの前後の空白を取り除く
   // const filterValue = rawFilterValue?.trim();
-  const filterValue = useSelector(state => state.filterValue.trim());
+  const filterValue = useSelector((state: RootState) =>
+    state.filterValue.trim(),
+  );
   // 検索結果空白排除
   // const keywords = filterValue?.toLowerCase().split(/\s+/g) ?? [];
   const keywords = filterValue.toLowerCase().split(/\s+/g) ?? [];
@@ -52,9 +48,9 @@ export function Column({
   // const confirmInput = () => setText('');
   // const cancelInput = () => setInputMode(false);
 
-  const confirmInput = () => {
-    onTextConfirm?.();
-  };
+  // const confirmInput = () => {
+  //   onTextConfirm?.();
+  // };
   const cancelInput = () => {
     setInputMode(false);
     onTextCancel?.();
@@ -68,7 +64,9 @@ export function Column({
   //   onCardDragStart?.(id);
   // };
 
-  const draggingCardID = useSelector(state => state.draggingCardID);
+  const draggingCardID = useSelector(
+    (state: RootState) => state.draggingCardID,
+  );
   return (
     <Container>
       <Header>
@@ -78,14 +76,7 @@ export function Column({
         <AddButton onClick={toggleInput} />
       </Header>
 
-      {inputMode && (
-        <InputForm
-          value={text}
-          onChange={onTextChange}
-          onConfirm={confirmInput}
-          onCancel={cancelInput}
-        />
-      )}
+      {inputMode && <InputForm columnID={columnID} onCancel={cancelInput} />}
 
       {!cards ? (
         <Loading />
@@ -103,7 +94,7 @@ export function Column({
                   (id === draggingCardID || cards[i - 1]?.id === draggingCardID)
                 }
               >
-                <Card text={text} id={id} />
+                <Card id={id} />
               </Card.DropArea>
             ))}
 

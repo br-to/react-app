@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 // import produce from 'immer';
-import { randomID, reorderPatch } from './util';
-import { api, CardID, ColumnID } from './api';
+import { api } from './api';
 import { State as RootState, Action } from './reducer';
 import { Header as _Header } from './Header';
 import { Column } from './Column';
@@ -25,11 +24,11 @@ export function App() {
   // const [{ columns, cardsOrder }, setData] = useState<State>({
   //   cardsOrder: {},
   // });
-  const columns = useSelector(state => state.columns);
-  const cardsOrder = useSelector(state => state.cardsOrder);
+  const columns = useSelector((state: RootState) => state.columns);
+  // const cardsOrder = useSelector(state => state.cardsOrder);
   // const setData = fn => fn({ cardsOrder: {} });
 
-  const cardIsBeingDeleted = useSelector(state =>
+  const cardIsBeingDeleted = useSelector((state: RootState) =>
     Boolean(state.deletingCardID),
   );
   // const setDeletingCardID = (cardID: CardID) =>
@@ -69,39 +68,39 @@ export function App() {
     })();
   }, [dispatch]);
 
-  const setText = (columnID: ColumnID, value: string) => {
-    dispatch({
-      type: 'InputForm.SetText',
-      payload: {
-        columnID,
-        value,
-      },
-    });
-  };
+  // const setText = (columnID: ColumnID, value: string) => {
+  //   dispatch({
+  //     type: 'InputForm.SetText',
+  //     payload: {
+  //       columnID,
+  //       value,
+  //     },
+  //   });
+  // };
 
-  const addCard = (columnID: ColumnID) => {
-    const column = columns?.find(c => c.id === columnID);
-    if (!column) return;
+  // const addCard = (columnID: ColumnID) => {
+  //   const column = columns?.find(c => c.id === columnID);
+  //   if (!column) return;
 
-    const text = column.text;
-    const cardID = randomID() as CardID;
+  //   const text = column.text;
+  //   const cardID = randomID() as CardID;
 
-    const patch = reorderPatch(cardsOrder, cardID, cardsOrder[columnID]);
+  //   const patch = reorderPatch(cardsOrder, cardID, cardsOrder[columnID]);
 
-    dispatch({
-      type: 'InputForm.ConfirmInput',
-      payload: {
-        columnID,
-        cardID,
-      },
-    });
+  //   dispatch({
+  //     type: 'InputForm.ConfirmInput',
+  //     payload: {
+  //       columnID,
+  //       cardID,
+  //     },
+  //   });
 
-    api('POST /v1/cards', {
-      id: cardID,
-      text,
-    });
-    api('PATCH /v1/cardsOrder', patch);
-  };
+  //   api('POST /v1/cards', {
+  //     id: cardID,
+  //     text,
+  //   });
+  //   api('PATCH /v1/cardsOrder', patch);
+  // };
 
   // const [draggingCardID, setDraggingCardID] =
   //   useState<CardID | undefined>(undefined);
@@ -157,15 +156,12 @@ export function App() {
           {!columns ? (
             <Loading />
           ) : (
-            columns.map(({ id: columnID, title, cards, text }) => (
+            columns.map(({ id: columnID, title, cards }) => (
               <Column
                 key={columnID}
                 id={columnID}
                 title={title}
                 cards={cards}
-                text={text}
-                onTextChange={value => setText(columnID, value)}
-                onTextConfirm={() => addCard(columnID)}
               />
             ))
           )}
