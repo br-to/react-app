@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 // import produce from 'immer';
 import { api } from './api';
-import { State as RootState, Action } from './reducer';
+import { State as RootState } from './reducer';
 import { Header as _Header } from './Header';
 import { Column } from './Column';
 import { DeleteDialog } from './DeleteDialog';
@@ -24,24 +24,27 @@ export function App() {
   // const [{ columns, cardsOrder }, setData] = useState<State>({
   //   cardsOrder: {},
   // });
-  const columns = useSelector((state: RootState) => state.columns);
+  const columns = useSelector(
+    (state: RootState) => state.columns?.map(v => v.id),
+    shallowEqual,
+  );
   // const cardsOrder = useSelector(state => state.cardsOrder);
   // const setData = fn => fn({ cardsOrder: {} });
 
-  const cardIsBeingDeleted = useSelector((state: RootState) =>
-    Boolean(state.deletingCardID),
-  );
-  // const setDeletingCardID = (cardID: CardID) =>
+  // const cardIsBeingDeleted = useSelector((state: RootState) =>
+  //   Boolean(state.deletingCardID),
+  // );
+  // // const setDeletingCardID = (cardID: CardID) =>
+  // //   dispatch({
+  // //     type: 'Card.SetDeletingCard',
+  // //     payload: {
+  // //       cardID,
+  // //     },
+  // //   });
+  // const cancelDelete = () =>
   //   dispatch({
-  //     type: 'Card.SetDeletingCard',
-  //     payload: {
-  //       cardID,
-  //     },
+  //     type: 'Dialog.CacelDelete',
   //   });
-  const cancelDelete = () =>
-    dispatch({
-      type: 'Dialog.CacelDelete',
-    });
 
   useEffect(() => {
     (async () => {
@@ -156,18 +159,35 @@ export function App() {
           {!columns ? (
             <Loading />
           ) : (
-            columns.map(({ id }) => <Column key={id} id={id} />)
+            columns.map(id => <Column key={id} id={id} />)
           )}
           ;
         </HorizontalScroll>
       </MainArea>
-
-      {cardIsBeingDeleted && (
-        <Overlay onClick={cancelDelete}>
-          <DeleteDialog />
-        </Overlay>
-      )}
+      <DialogOverlay />
     </Container>
+  );
+}
+
+function DialogOverlay() {
+  const dispatch = useDispatch();
+  const cardIsBeingDeleted = useSelector((state: RootState) =>
+    Boolean(state.deletingCardID),
+  );
+
+  const cancelDelete = () =>
+    dispatch({
+      type: 'Dialog.CancelDelete',
+    });
+
+  if (!cardIsBeingDeleted) {
+    return null;
+  }
+
+  return (
+    <Overlay onClick={cancelDelete}>
+      <DeleteDialog />
+    </Overlay>
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import * as color from './color';
 import { Card } from './Card';
 import { PlusIcon } from './icon';
@@ -19,14 +19,24 @@ export function Column({ id: columnID }: { id: ColumnID }) {
       const filtered = Boolean(filterValue);
       const keywords = filterValue.toLowerCase().split(/\s+/g);
 
-      const column = state.columns?.find(c => c.id === columnID);
-      const cards = column?.cards?.filter(({ text }) =>
-        keywords.every(w => text?.toLowerCase().includes(w)),
+      const { title, cards: rawCards } = state.columns?.find(
+        c => c.id === columnID,
       );
-      const totalCount = column?.cards?.length ?? -1;
+
+      // const column = state.columns?.find(c => c.id === columnID);
+      const column = { title };
+      const cards = rawCards
+        ?.filter(({ text }) =>
+          keywords.every(w => text?.toLowerCase().includes(w)),
+        )
+        .map(c => c.id);
+
+      const totalCount = rawCards?.length ?? -1;
 
       return { column, cards, filtered, totalCount };
     },
+    (left, right) =>
+      Object.keys(left).every(key => shallowEqual(left[key], right[key])),
   );
   const draggingCardID = useSelector(
     (state: RootState) => state.draggingCardID,
@@ -71,13 +81,13 @@ export function Column({ id: columnID }: { id: ColumnID }) {
           {filtered && <ResultCount>{cards.length} results</ResultCount>}
 
           <VerticalScroll>
-            {cards.map(({ id }, i) => (
+            {cards.map((id, i) => (
               <Card.DropArea
                 key={id}
                 targetID={id}
                 disabled={
                   draggingCardID !== undefined &&
-                  (id === draggingCardID || cards[i - 1]?.id === draggingCardID)
+                  (id === draggingCardID || cards[i - 1] === draggingCardID)
                 }
               >
                 <Card id={id} />
@@ -89,7 +99,7 @@ export function Column({ id: columnID }: { id: ColumnID }) {
               style={{ height: '100%' }}
               disabled={
                 draggingCardID !== undefined &&
-                cards[cards.length - 1]?.id === draggingCardID
+                cards[cards.length - 1] === draggingCardID
               }
             />
           </VerticalScroll>
