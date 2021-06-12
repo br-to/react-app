@@ -1,27 +1,59 @@
 import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { randomID, reorderPatch } from './util';
+import { api, CardID, ColumnID } from './api';
 import * as color from './color';
 import { Button, ConfirmButton } from './Button';
+import { State as RootState } from './reducer';
 
 // value: 表示する値
 // onChange, onConfirm, onCancel イベントを受け取るハンドラー関数
 export function InputForm({
-  value,
-  onChange,
-  onConfirm,
+  columnID,
   onCancel,
   className,
 }: {
-  value?: string;
-  onChange?(value: string): void;
-  onConfirm?(): void;
+  columnID: ColumnID;
   onCancel?(): void;
   className?: string;
 }) {
+  const dispatch = useDispatch();
+  const value = useSelector(
+    (state: RootState) => state.columns?.find(c => c.id === columnID)?.text,
+  );
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
+
+  const onChange = (value: string) =>
+    dispatch({
+      type: 'InputForm.SetText',
+      payload: {
+        columnID,
+        value,
+      },
+    });
   const disabled = !value?.trim();
   const handleConfirm = () => {
     if (disabled) return;
-    onConfirm?.();
+    const text = value;
+
+    const cardID = randomID() as CardID;
+
+    const patch = reorderPatch(cardsOrder, cardID, cardsOrder[columnID]);
+
+    dispatch({
+      type: 'InputForm.ConfirmInput',
+      payload: {
+        columnID,
+        cardID,
+      },
+    });
+
+    api('POST /v1/cards', {
+      id: cardID,
+      text,
+    });
+    api('PATCH /v1/cardsOrder', patch);
   };
 
   const ref = useAutoToContentHeight(value);
@@ -33,7 +65,7 @@ export function InputForm({
         autoFocus
         placeholder="Enter a note"
         value={value}
-        onChange={e => onChange?.(e.currentTarget.value)}
+        onChange={e => onChange(e.currentTarget.value)}
         onKeyDown={e => {
           if (!((e.metaKey || e.ctrlKey) && e.key === 'Enter')) return;
           handleConfirm();

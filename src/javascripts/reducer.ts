@@ -7,7 +7,7 @@ export type State = {
   filterValue: string;
   columns?: {
     id: ColumnID;
-    title: string;
+    title?: string;
     text?: string;
     cards?: {
       id: CardID;
@@ -68,6 +68,9 @@ export type Action =
       payload: {
         cardID: CardID;
       };
+    }
+  | {
+      type: 'Card.EndDragging';
     }
   | {
       type: 'Card.Drop';
@@ -156,6 +159,12 @@ export const reducer: Reducer<State, Action> = produce(
         draft.draggingCardID = cardID;
         return;
       }
+
+      case 'Card.EndDragging': {
+        draft.draggingCardID = undefined;
+        return;
+      }
+
       case 'Card.Drop': {
         const formID = draft.draggingCardID;
         if (!formID) return;

@@ -5,11 +5,14 @@ import { reorderPatch } from './util';
 import { api } from './api';
 import * as color from './color';
 import { Button, DangerButton } from './Button';
+import { State as RootState } from './reducer';
 
 export function DeleteDialog({ className }: { className?: string }) {
   const dispatch = useDispatch();
-  const deletingCardID = useSelector(state => state.deletingCardID);
-  const cardsOrder = useSelector(state => state.cardsOrder);
+  const deletingCardID = useSelector(
+    (state: RootState) => state.deletingCardID,
+  );
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
 
   const onConfirm = () => {
     const cardID = deletingCardID;
