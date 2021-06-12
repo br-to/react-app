@@ -70,6 +70,9 @@ export type Action =
       };
     }
   | {
+      type: 'Card.EndDragging';
+    }
+  | {
       type: 'Card.Drop';
       payload: {
         toID: CardID | ColumnID;
@@ -156,6 +159,12 @@ export const reducer: Reducer<State, Action> = produce(
         draft.draggingCardID = cardID;
         return;
       }
+
+      case 'Card.EndDragging': {
+        draft.draggingCardID = undefined;
+        return;
+      }
+
       case 'Card.Drop': {
         const formID = draft.draggingCardID;
         if (!formID) return;

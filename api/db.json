@@ -43,10 +43,6 @@
       "text": "koabaradesu!"
     },
     {
-      "id": "O64mdndqNT5Y",
-      "text": "koaba"
-    },
-    {
       "id": "WhyiDduIJF6R",
       "text": "qqqq"
     },
@@ -57,15 +53,14 @@
   ],
   "cardsOrder": {
     "cXrtw5n8-FsB": "R49rVatNWTFp",
-    "w7DTqK1QQKTI": "O64mdndqNT5Y",
-    "bfrqTfEydU38": "WhyiDduIJF6R",
+    "w7DTqK1QQKTI": "ggi6Fj5SXEmI",
+    "bfrqTfEydU38": "bfrqTfEydU38",
     "dfwMbxZS0EmM": "7lR4Vd3EYixP",
     "7lR4Vd3EYixP": "dfwMbxZS0EmM",
     "-wkumDeruhSx": "w7DTqK1QQKTI",
-    "ggi6Fj5SXEmI": "-wkumDeruhSx",
+    "ggi6Fj5SXEmI": "WhyiDduIJF6R",
     "Veql4ca7OSCc": "ulnuLLt5TN93",
-    "O64mdndqNT5Y": "ggi6Fj5SXEmI",
-    "WhyiDduIJF6R": "bfrqTfEydU38",
+    "WhyiDduIJF6R": "-wkumDeruhSx",
     "R49rVatNWTFp": "Veql4ca7OSCc"
   }
 }

@@ -32,13 +32,13 @@ export function App() {
   const cardIsBeingDeleted = useSelector(state =>
     Boolean(state.deletingCardID),
   );
-  const setDeletingCardID = (cardID: CardID) =>
-    dispatch({
-      type: 'Card.SetDeletingCard',
-      payload: {
-        cardID,
-      },
-    });
+  // const setDeletingCardID = (cardID: CardID) =>
+  //   dispatch({
+  //     type: 'Card.SetDeletingCard',
+  //     payload: {
+  //       cardID,
+  //     },
+  //   });
   const cancelDelete = () =>
     dispatch({
       type: 'Dialog.CacelDelete',
@@ -106,47 +106,47 @@ export function App() {
   // const [draggingCardID, setDraggingCardID] =
   //   useState<CardID | undefined>(undefined);
 
-  const draggingCardID = useSelector(state => state.draggingCardID);
-  const setDraggingCardID = (cardID: CardID) =>
-    dispatch({
-      type: 'Card.StartDragging',
-      payload: {
-        cardID,
-      },
-    });
+  // const draggingCardID = useSelector(state => state.draggingCardID);
+  // const setDraggingCardID = (cardID: CardID) =>
+  //   dispatch({
+  //     type: 'Card.StartDragging',
+  //     payload: {
+  //       cardID,
+  //     },
+  //   });
 
-  const dropCardTo = (toID: CardID | ColumnID) => {
-    const fromID = draggingCardID;
-    if (!fromID) return;
+  // const dropCardTo = (toID: CardID | ColumnID) => {
+  //   const fromID = draggingCardID;
+  //   if (!fromID) return;
 
-    // setDraggingCardID(undefined);
+  //   // setDraggingCardID(undefined);
 
-    if (fromID === toID) return;
+  //   if (fromID === toID) return;
 
-    const patch = reorderPatch(cardsOrder, fromID, toID);
-    // setData(
-    //   produce((draft: State) => {
-    //     draft.cardsOrder = {
-    //       ...draft.cardsOrder,
-    //       ...patch,
-    //     };
+  //   const patch = reorderPatch(cardsOrder, fromID, toID);
+  // setData(
+  //   produce((draft: State) => {
+  //     draft.cardsOrder = {
+  //       ...draft.cardsOrder,
+  //       ...patch,
+  //     };
 
-    //     const unorderedCards = draft.columns?.flatMap(c => c.cards ?? []) ?? [];
-    //     draft.columns?.forEach(column => {
-    //       column.cards = sortBy(unorderedCards, draft.cardsOrder, column.id);
-    //     });
-    //   }),
-    // );
+  //     const unorderedCards = draft.columns?.flatMap(c => c.cards ?? []) ?? [];
+  //     draft.columns?.forEach(column => {
+  //       column.cards = sortBy(unorderedCards, draft.cardsOrder, column.id);
+  //     });
+  //   }),
+  // );
 
-    dispatch({
-      type: 'Card.Drop',
-      payload: {
-        toID,
-      },
-    });
+  //   dispatch({
+  //     type: 'Card.Drop',
+  //     payload: {
+  //       toID,
+  //     },
+  //   });
 
-    api('PATCH /v1/cardsOrder', patch);
-  };
+  //   api('PATCH /v1/cardsOrder', patch);
+  // };
 
   return (
     <Container>
@@ -160,11 +160,9 @@ export function App() {
             columns.map(({ id: columnID, title, cards, text }) => (
               <Column
                 key={columnID}
+                id={columnID}
                 title={title}
                 cards={cards}
-                onCardDragStart={cardID => setDraggingCardID(cardID)}
-                onCardDrop={entered => dropCardTo(entered ?? columnID)}
-                onCardDeleteClick={cardID => setDeletingCardID(cardID)}
                 text={text}
                 onTextChange={value => setText(columnID, value)}
                 onTextConfirm={() => addCard(columnID)}
