@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { reorderPatch } from './util';
+import { State as RootState } from './reducer';
 import { api, ColumnID, CardID } from './api';
 import * as color from './color';
 import { CheckIcon as _CheckIcon, TrashIcon } from './icon';
@@ -11,10 +12,10 @@ Card.DropArea = DropArea;
 export function Card({ id }: { id: CardID }) {
   // const [drag, setDrag] = useState(false);
   const dispatch = useDispatch();
-  const card = useSelector(state =>
+  const card = useSelector((state: RootState) =>
     state.columns?.flatMap(c => c.cards ?? []).find(c => c.id === id),
   );
-  const drag = useSelector(state => state.draggingCardID === id);
+  const drag = useSelector((state: RootState) => state.draggingCardID === id);
 
   const onDeleteClick = () =>
     dispatch({
@@ -115,24 +116,23 @@ const Link = styled.a.attrs({
 `;
 
 function DropArea({
-  targetID; toID,
+  targetID: toID,
   disabled,
-  onDrop,
   children,
   className,
   style,
 }: {
   targetID: CardID | ColumnID;
   disabled?: boolean;
-  onDrop?(): void;
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  }) {
+}) {
   const dispatch = useDispatch();
-  const draggingCardID = useSelector(state => state.draggingCardID);
-  const cardsOrder = useSelector(state => state.cardsOrder);
-
+  const draggingCardID = useSelector(
+    (state: RootState) => state.draggingCardID,
+  );
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
 
   const [isTarget, setIsTarget] = useState(false);
   const visible = !disabled && isTarget;
@@ -162,11 +162,11 @@ function DropArea({
           type: 'Card.Drop',
           payload: {
             toID,
-          }
-        })
+          },
+        });
 
-        const patch = reorderPatch(cardsOrder, draggingCardID, toID)
-        api('PATCH /v1/cardsOrder', patch)
+        const patch = reorderPatch(cardsOrder, draggingCardID, toID);
+        api('PATCH /v1/cardsOrder', patch);
 
         setIsTarget(false);
       }}

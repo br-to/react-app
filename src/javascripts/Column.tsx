@@ -1,61 +1,52 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import * as color from './color';
 import { Card } from './Card';
+import { State as RootState } from './reducer';
 import { PlusIcon } from './icon';
 import { InputForm as _InputForm } from './InputForm';
-import { CardID, ColumnID } from './api';
+import { ColumnID } from './api';
 
-export function Column({
-  id: columnID,
-  title,
-  cards: rawCards,
-  onTextCancel,
-}: {
-  id: ColumnID;
-  title?: string;
-  cards?: {
-    id: CardID;
-    text?: string;
-  }[];
-  onTextCancel?(): void;
-}) {
-  // rawFilterValueの前後の空白を取り除く
-  const filterValue = useSelector(state => state.filterValue.trim());
-  // 検索結果空白排除
-  const keywords = filterValue.toLowerCase().split(/\s+/g) ?? [];
+export function Column({ id: columnID }: { id: ColumnID }) {
+  const { column, cards, filtered, totalCount } = useSelector(
+    (state: RootState) => {
+      const filterValue = state.filterValue.trim();
+      const filtered = Boolean(filterValue);
+      const keywords = filterValue.toLowerCase().split(/\s+/g);
 
-  const cards = rawCards?.filter(({ text }) =>
-    keywords?.every(word => text?.toLowerCase().includes(word)),
+      const { title, cards: rawCards } =
+        state.columns?.find(c => c.id === columnID) ?? {};
+
+      const column = { title };
+      const cards = rawCards
+        ?.filter(({ text }) =>
+          keywords.every(w => text?.toLowerCase().includes(w)),
+        )
+        .map(c => c.id);
+      const totalCount = rawCards?.length ?? -1;
+
+      return { column, cards, filtered, totalCount };
+    },
+    (left, right) =>
+      Object.keys(left).every(key => shallowEqual(left[key], right[key])),
   );
-
-  // 各column内のcardの個数
-  const totalCount = rawCards?.length;
-
-  // inputForm入力あるたびにonChangeに入れたsetTextを呼ぶ
-  // textはColumnコンポーネントのstate
-  // const [text, setText] = useState('');
-  // inputMode InputForm の表示・非表示を制御しています。
+  const draggingCardID = useSelector(
+    (state: RootState) => state.draggingCardID,
+  );
   const [inputMode, setInputMode] = useState(false);
   // 現在の値から次の値を算出する関数を渡す
   const toggleInput = () => setInputMode((value: boolean) => !value);
-  // const confirmInput = () => setText('');
-  // const cancelInput = () => setInputMode(false);
 
   const cancelInput = () => {
     setInputMode(false);
-    onTextCancel?.();
   };
 
-  // const [draggingCardID, setDraggingCardID] =
-  //   useState<CardID | undefined>(undefined);
+  if (!column) {
+    return null;
+  }
+  const { title } = column;
 
-  // const handleCardDragStart = (id: CardID) => {
-  //   setDraggingCardID(id);
-  //   onCardDragStart?.(id);
-  // };
-  const draggingCardID = useSelector(state => state.draggingCardID);
   return (
     <Container>
       <Header>
@@ -71,16 +62,16 @@ export function Column({
         <Loading />
       ) : (
         <>
-          {filterValue && <ResultCount>{cards.length} results</ResultCount>}
+          {filtered && <ResultCount>{cards.length} results</ResultCount>}
 
           <VerticalScroll>
-            {cards.map(({ id }, i) => (
+            {cards.map((id, i) => (
               <Card.DropArea
                 key={id}
                 targetID={id}
                 disabled={
                   draggingCardID !== undefined &&
-                  (id === draggingCardID || cards[i - 1]?.id === draggingCardID)
+                  (id === draggingCardID || cards[i - 1] === draggingCardID)
                 }
               >
                 <Card id={id} />
@@ -92,7 +83,7 @@ export function Column({
               style={{ height: '100%' }}
               disabled={
                 draggingCardID !== undefined &&
-                cards[cards.length - 1]?.id === draggingCardID
+                cards[cards.length - 1] === draggingCardID
               }
             />
           </VerticalScroll>

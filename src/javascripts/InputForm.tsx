@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { State as RootState } from './reducer';
 import { randomID, reorderPatch } from './util';
 import { api, CardID, ColumnID } from './api';
 import * as color from './color';
@@ -19,13 +20,13 @@ export function InputForm({
 }) {
   const dispatch = useDispatch();
   const value = useSelector(
-    state => state.columns?.find(c => c.id === columnID)?.text,
+    (state: RootState) => state.columns?.find(c => c.id === columnID)?.text,
   );
-  const cardsOrder = useSelector(state => state.cardsOrder);
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
 
   const onChange = (value: string) =>
     dispatch({
-      type: 'InputForm.setText',
+      type: 'InputForm.SetText',
       payload: {
         columnID,
         value,

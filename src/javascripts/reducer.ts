@@ -7,13 +7,14 @@ export type State = {
   filterValue: string;
   columns?: {
     id: ColumnID;
-    title: string;
+    title?: string;
     text?: string;
     cards?: {
       id: CardID;
       text?: string;
     }[];
   }[];
+  columnText?: string[];
   cardsOrder: Record<string, CardID | ColumnID | null>;
   deletingCardID?: CardID;
   draggingCardID?: CardID;
@@ -155,8 +156,8 @@ export const reducer: Reducer<State, Action> = produce(
         return;
       }
       case 'Card.StartDragging': {
-        const { cardID } = action.payload;
-        draft.draggingCardID = cardID;
+        const cardID = action.payload;
+        draft.draggingCardID = cardID as any;
         return;
       }
       case 'Card.Drop': {

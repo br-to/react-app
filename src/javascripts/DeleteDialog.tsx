@@ -2,15 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { reorderPatch } from './util';
+import { State as RootState } from './reducer';
 import { api } from './api';
 import * as color from './color';
 import { Button, DangerButton } from './Button';
 
 export function DeleteDialog({ className }: { className?: string }) {
   const dispatch = useDispatch();
-  const deletingCardID = useSelector(state => state.deletingCardID);
-  const cardsOrder = useSelector(state => state.cardsOrder);
-
+  const deletingCardID = useSelector(
+    (state: RootState) => state.deletingCardID,
+  );
+  const cardsOrder = useSelector((state: RootState) => state.cardsOrder);
+  console.log(cardsOrder);
   const onConfirm = () => {
     const cardID = deletingCardID;
     if (!cardID) return;
