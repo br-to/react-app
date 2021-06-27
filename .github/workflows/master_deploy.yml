@@ -48,22 +48,11 @@ jobs:
         with:
           name: Artifact ${{ github.sha }}
           path: dist
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: App Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          aws-sercret-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-sercret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Set Repository Name from Github Environment Variables
-        id:  githubRepo
-        run:
-          echo "::set-output name=name::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")"
-      - name: Deploy App Build to S3 Bucket
-        run: aws s3 sync ./dist/ s3://designserver-test-kobara/${{ steps.githubRepo.outputs.name }}/main --exact-timestamps --delte
-        with:
-          aws-sercret-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-sercret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
       - name: Slack Notification Success
         if: success()
         uses: rtCamp/action-slack-notify@master
